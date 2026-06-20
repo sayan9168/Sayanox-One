@@ -1,23 +1,75 @@
-### AL ###
-#Template for AL projects for Dynamics 365 Business Central
-#launch.json folder
+# ─── Generated output and logs
+reports/
+logs/
+screenshots/
+*.pdf
+*.html
+*.json
+*.csv
+*.xml
+*.txt
+*.log
+
+# ─── Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+venv/
+env/
+.env
+.env.*
+.pytest_cache/
+.mypy_cache/
+.tox/
+*.egg-info/
+dist/
+build/
+
+# ─── Compiled code / other languages
+*.exe
+*.bin
+*.out
+*.o
+*.a
+*.so
+*.dll
+target/             # Rust
+Cargo.lock
+*.class             # Java
+
+# ─── Secrets and private config
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+id_*
+!id_rsa.pub
+credentials.json
+secrets.yaml
+config/local_settings.yaml
+
+# ─── External tools and fetched assets
+tools/external/
+third-party/
+submodules/
+downloads/
+
+# ─── IDE and editor files
 .vscode/
-#Cache folder
-.alcache/
-#Symbols folder
-.alpackages/
-#Snapshots folder
-.snapshots/
-#Testing Output folder
-.output/
-#Extension App-file
-*.app
-#Rapid Application Development File
-rad.json
-#Translation Base-file
-*.g.xlf
-#License-files
-*.bclicense
-*.flf
-#Test results file
-TestResults.xml
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Archives and temporary files
+*.tar.gz
+*.zip
+*.7z
+*.rar
+*.tmp
