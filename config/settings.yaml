@@ -1,0 +1,28 @@
+# Sayanox‑One Global Settings
+general:
+  log_level: INFO
+  output_dir: reports/
+  max_threads: 50
+  timeout: 300
+
+scan:
+  port_range: "1‑65535"
+  fast_scan: true
+  evasion:
+    enabled: true
+    delay_ms: 200
+    fragment_packets: false
+
+recon:
+  use_osint_sources: true
+  dns_bruteforce: true
+  subdomain_wordlist: "config/wordlists/subdomains.txt"
+
+exploit:
+  simulation_only: true       # Keep safe by default
+  max_depth: 3
+
+reporting:
+  formats: ["html","json"]
+  cvss_min_score: 4.0
+  
