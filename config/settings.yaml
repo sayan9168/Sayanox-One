@@ -1,12 +1,14 @@
-# Sayanox‑One Global Settings
 general:
   log_level: INFO
   output_dir: reports/
-  max_threads: 50
-  timeout: 300
+  max_threads: 30             # safe — not too fast
+  timeout: 15000              # ms
+  enforce_allowlist: true     # critical
+  allowlist_file: "config/allowlists.txt"
+  allow_local: false
 
 scan:
-  port_range: "1‑65535"
+  port_range: "1‑1000"        # full = 1‑65535, start smaller
   fast_scan: true
   evasion:
     enabled: true
@@ -14,13 +16,13 @@ scan:
     fragment_packets: false
 
 recon:
-  use_osint_sources: true
+  dns_timeout: 4
   dns_bruteforce: true
   subdomain_wordlist: "config/wordlists/subdomains.txt"
 
 exploit:
-  simulation_only: true       # Keep safe by default
-  max_depth: 3
+  simulation_only: true       # NEVER set false unless fully authorized
+  max_depth: 2
 
 reporting:
   formats: ["html","json"]
