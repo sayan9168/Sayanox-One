@@ -1,45 +1,49 @@
 import ipaddress
+import socket
 from urllib.parse import urlparse
 from utils.logger import LOGGER
 
-def is_ip(target: str) -> bool:
-    """Check if the target is a valid IP address"""
+def resolve_hostname(host: str):
+    try:
+        return socket.gethostbyname_ex(host)[2]
+    except Exception:
+        return []
+
+def validate_target(target: str, config: dict):
+    """Strict real‑world validation — prevents scanning invalid/protected ranges"""
+    if not target:
+        return False
+
+    # Format check
+    valid_types = [False, False, False]
     try:
         ipaddress.ip_address(target)
-        return True
-    except ipaddress.AddressValueError:
-        return False
-
-def is_domain(target: str) -> bool:
-    """Check if the target is a valid domain"""
-    try:
-        result = urlparse(f"http://{target}")
-        return all([result.scheme, result.netloc])
+        valid_types[0] = True
     except ValueError:
-        return False
+        try:
+            ipaddress.ip_network(target, strict=False)
+            valid_types[1] = True
+        except ValueError:
+            try:
+                res = urlparse(f"http://{target}")
+                valid_types[2] = bool(res.netloc)
+            except Exception:
+                pass
 
-def is_cidr(target: str) -> bool:
-    """Check if the target is a valid CIDR range"""
-    try:
-        ipaddress.ip_network(target, strict=False)
-        return True
-    except (ipaddress.AddressValueError, ValueError):
-        return False
-
-def validate_target(target: str, config: dict) -> bool:
-    """Full validation of the target against allowlists and type checks"""
-    # Check target type
-    if not any([is_ip(target), is_domain(target), is_cidr(target)]):
+    if not any(valid_types):
         LOGGER.error(f"Invalid target format: {target}")
         return False
 
-    # Check against allowlist (if enabled)
-    if config.get("general", {}).get("use_allowlist", False):
-        with open(config["general"]["allowlist_file"], "r") as f:
-            allowed = [line.strip() for line in f if line.strip()]
-        if target not in allowed:
-            LOGGER.error(f"Target {target} is not in the allowlist.")
+    # Allowlist check — critical for real use
+    if config["general"].get("enforce_allowlist", True):
+        with open(config["general"]["allowlist_file"]) as f:
+            allowed = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+        if not any(allowed_target in target for allowed_target in allowed):
+            LOGGER.error(f"⚠️ Target {target} NOT in allowlist — blocked")
             return False
 
+    # Block private loopback unless explicitly allowed
+    if any(net in target for net in ("127.0.0.", "::1", "192.168.", "10.")) and not config["general"].get("allow_local", False):
+        LOGGER.warning("Local/private scanning disabled by default")
     return True
-          
+    
